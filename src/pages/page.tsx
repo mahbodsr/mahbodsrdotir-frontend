@@ -1,6 +1,6 @@
 import { useVideos } from "@/src/api/videos";
 import CustomSwiper from "./CustomSwiper";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 export interface IVideos {
   [key: string]: {
@@ -12,14 +12,21 @@ export interface IVideos {
 }
 
 export default function Home() {
-  const [videos, setVideos] = useState<IVideos>({});
-  useVideos()
+  const { data, mutate } = useVideos();
+  const videosArr = data?.data ? Object.entries(data.data).reverse() : [];
+
   useEffect(() => {
-    fetch("/api/videos")
-      .then((res) => res.json())
-      .then(setVideos);
-  }, []);
-  const videosArr = Object.entries(videos).reverse();
+    const ArrowKeyHandler = (event: KeyboardEvent) => {
+      if (event.key === "ArrowDown") {
+        mutate();
+      }
+    };
+    window.addEventListener("keydown", ArrowKeyHandler);
+    return () => {
+      window.removeEventListener("keydown", ArrowKeyHandler);
+    };
+  }, [mutate]);
+
   if (videosArr.length === 0) return "No videos found.";
   return <CustomSwiper videos={videosArr} />;
 }
