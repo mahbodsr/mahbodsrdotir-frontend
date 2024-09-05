@@ -13,7 +13,12 @@ const Component = () => {
   }, [videoRef]);
   return (
     <video autoPlay controls ref={videoRef}>
-      <source src={`/api/stream/${chatId}/${messageId}`} type="video/mp4" />
+      <source
+        src={`${
+          import.meta.env.VITE_API_BASE_URL
+        }/stream/${chatId}/${messageId}`}
+        type="video/mp4"
+      />
     </video>
   );
 };
